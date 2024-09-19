@@ -318,15 +318,35 @@ public class jartoexe extends javax.swing.JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 Process process = Runtime.getRuntime().exec(command);
+
+                // Readers to capture output and errors from the process
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
                 String line;
-                while ((line = reader.readLine()) != null) {
-                    publish(line);
-                }
-                while ((line = errorReader.readLine()) != null) {
-                    publish(line);
+                int progress = 0;
+
+                // Initially set progress to 0
+                setProgress(progress);
+                publish("Starting...");
+
+                while ((line = reader.readLine()) != null || (line = errorReader.readLine()) != null) {
+                    publish(line);  // Send real-time output to txtAreaOutputResult
+
+                    // Update progress based on output or time intervals
+                    if (line.contains("compiling") && progress < 25) {
+                        progress = 25;
+                        publish("Compiling... 25%");
+                        setProgress(progress);
+                    } else if (line.contains("integrating") && progress < 50) {
+                        progress = 50;
+                        publish("Integrating JRE... 50%");
+                        setProgress(progress);
+                    } else if (line.contains("making exe") && progress < 75) {
+                        progress = 75;
+                        publish("Making EXE... 75%");
+                        setProgress(progress);
+                    }
                 }
 
                 process.waitFor();
@@ -337,16 +357,27 @@ public class jartoexe extends javax.swing.JFrame {
             protected void process(List<String> chunks) {
                 for (String line : chunks) {
                     txtAreaOutputResult.append(line + "\n");
-                    // Optionally update progress bar here if progress information is available
+
+                    // Update the progress bar based on the progress
+                    if (line.contains("Compiling... 25%")) {
+                        Progressbar.setValue(25);
+                    } else if (line.contains("Integrating JRE... 50%")) {
+                        Progressbar.setValue(50);
+                    } else if (line.contains("Making EXE... 75%")) {
+                        Progressbar.setValue(75);
+                    } else if (line.contains("Completed! 100%")) {
+                        Progressbar.setValue(100);
+                    }
                 }
             }
 
             @Override
             protected void done() {
                 try {
-                    get(); // Ensure any exceptions are propagated
+                    get();  // Ensure any exceptions are propagated
+                    publish("Completed! 100%");
+                    Progressbar.setValue(100);  // Set progress bar to 100% upon completion
                     JOptionPane.showMessageDialog(jartoexe.this, "Packaging completed successfully!");
-                    Progressbar.setValue(100); // Set progress bar to 100% upon completion
                 } catch (HeadlessException | InterruptedException | ExecutionException e) {
                     JOptionPane.showMessageDialog(jartoexe.this, "An error occurred during packaging: " + e.getMessage());
                 }
