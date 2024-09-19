@@ -4,8 +4,13 @@
  */
 package jartoexewarpper;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -52,18 +57,36 @@ public class frame1 extends javax.swing.JFrame {
         txtInputJarFile = new javax.swing.JTextField();
         rbtMSI = new javax.swing.JRadioButton();
         btnWarp = new javax.swing.JButton();
+        Progressbar = new javax.swing.JProgressBar();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtAreaOutputResults = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         btnSelectInputJar.setText("Select");
+        btnSelectInputJar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSelectInputJarActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("Company (Publisher) Name");
 
         btnSelectIconPath.setText("Select");
+        btnSelectIconPath.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSelectIconPathActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Application Version (Ex: 1.0.0)");
 
         btnBrowseOutput.setText("Browse");
+        btnBrowseOutput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBrowseOutputActionPerformed(evt);
+            }
+        });
 
         jLabel7.setText("Application Output Name");
 
@@ -95,6 +118,11 @@ public class frame1 extends javax.swing.JFrame {
             }
         });
 
+        txtAreaOutputResults.setEditable(false);
+        txtAreaOutputResults.setColumns(20);
+        txtAreaOutputResults.setRows(5);
+        jScrollPane1.setViewportView(txtAreaOutputResults);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -107,25 +135,23 @@ public class frame1 extends javax.swing.JFrame {
                         .addGap(125, 125, 125))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txticonPath, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(txticonPath, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(rbtEXE, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSelectIconPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel6)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(rbtEXE, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(rbtMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel3)
-                                    .addComponent(txtOutPut, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtAppVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addComponent(rbtMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel3)
+                            .addComponent(txtOutPut, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtAppVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnBrowseOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnSelectIconPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,28 +160,34 @@ public class frame1 extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnSelectInputJar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(btnBrowseOutput, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel7)
-                                            .addComponent(txtAppName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(264, 264, 264)))
-                                .addGap(0, 6, Short.MAX_VALUE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel7)
+                                    .addComponent(txtAppName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(19, 19, 19))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 495, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
                             .addComponent(txtVendorName, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(174, 174, 174)
-                                .addComponent(btnWarp, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jLabel8))
+                        .addGap(0, 0, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(Progressbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(145, 145, 145)
+                        .addComponent(btnWarp, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,14 +227,18 @@ public class frame1 extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtVendorName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
+                .addGap(18, 18, 18)
+                .addComponent(Progressbar, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnWarp, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -211,26 +247,135 @@ public class frame1 extends javax.swing.JFrame {
 
     private void btnWarpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWarpActionPerformed
         String inputJarFile = txtInputJarFile.getText();
-    String iconPath = txticonPath.getText();
-    String outputFile = txtOutPut.getText();
-    String appName = txtAppName.getText();
-    String appVersion = txtAppVersion.getText();
-    String vendorName = txtVendorName.getText();
-    String appType = rbtEXE.isSelected() ? "exe" : "msi";
+        String iconPath = txticonPath.getText();
+        String outputFile = txtOutPut.getText();
+        String appName = txtAppName.getText();
+        String appVersion = txtAppVersion.getText();
+        String vendorName = txtVendorName.getText();
+        String appType = rbtEXE.isSelected() ? "exe" : "msi";
 
-    // Construct the jpackage command
-    String command = String.format(
-            "jpackage --input %s --name %s --version %s --output %s --icon %s --type %s --vendor %s",
-            inputJarFile, appName, appVersion, outputFile, iconPath, appType, vendorName);
+        // Construct the jpackage command
+        String command = String.format("jpackage --input \""+inputJarFile+"\""+" --main-jar JarToExeWarpper.jar --main-class JarToExeWarpper.frame1"+" --name "+appName+" --version "+appVersion+" --output \""+outputFile+"\" --icon \""+iconPath+"\" --type "+appType+" --vendor \""+vendorName+"\" --win-shortcut --win-dir-chooser");
 
-    try {
-        Process process = Runtime.getRuntime().exec(command);
-        process.waitFor();
-        JOptionPane.showMessageDialog(this, "Packaging completed successfully!");
-    } catch (IOException | InterruptedException ex) {
-        JOptionPane.showMessageDialog(this, "An error occurred during packaging: " + ex.getMessage());
-    }
+        System.out.println(command);
+                
+        // Clear the output area
+        txtAreaOutputResults.setText("");
+
+        // Create a SwingWorker to handle the background process
+        SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    Process process = Runtime.getRuntime().exec(command);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+                    String line;
+                    int progress = 0;
+
+                    // Reading the output from the process
+                    while ((line = reader.readLine()) != null) {
+                        publish(line);  // Send output to the JTextArea
+                        progress += 10;  // Increment progress based on the process's output
+                        setProgress(Math.min(progress, 100));  // Update the progress bar
+                    }
+
+                    // Read any errors from the process
+                    while ((line = errorReader.readLine()) != null) {
+                        publish("ERROR: " + line);  // Send errors to the JTextArea
+                    }
+
+                    process.waitFor();  // Wait for the process to complete
+                } catch (IOException | InterruptedException ex) {
+                    publish("An error occurred during packaging: " + ex.getMessage());
+                }
+                return null;
+            }
+
+            @Override
+            protected void process(java.util.List<String> chunks) {
+                // Append each line of the output to the JTextArea
+                for (String line : chunks) {
+                    txtAreaOutputResults.append(line + "\n");
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                    JOptionPane.showMessageDialog(null, "Packaging completed successfully!");
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "An error occurred: " + e.getMessage());
+                }
+            }
+        };
+
+        // Add a PropertyChangeListener to update the progress bar
+        worker.addPropertyChangeListener(evt1 -> {
+            if ("progress".equals(evt1.getPropertyName())) {
+                Progressbar.setValue((Integer) evt1.getNewValue());
+            }
+        });
+
+        // Execute the SwingWorker
+        worker.execute();
     }//GEN-LAST:event_btnWarpActionPerformed
+
+    private void btnSelectInputJarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectInputJarActionPerformed
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select Input JAR File");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            txtInputJarFile.setText(selectedFile.getAbsolutePath());
+        }
+    }//GEN-LAST:event_btnSelectInputJarActionPerformed
+
+    private void btnSelectIconPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectIconPathActionPerformed
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select Icon File");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        // Set file filter for .ico files
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().toLowerCase().endsWith(".ico");
+            }
+
+            @Override
+            public String getDescription() {
+                return "Icon Files (*.ico)";
+            }
+        });
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            txticonPath.setText(selectedFile.getAbsolutePath());
+        }
+
+    }//GEN-LAST:event_btnSelectIconPathActionPerformed
+
+    private void btnBrowseOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrowseOutputActionPerformed
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select Output Directory");
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedDirectory = fileChooser.getSelectedFile(); // Use getSelectedFile() for directories
+            txtOutPut.setText(selectedDirectory.getAbsolutePath());
+        }
+
+    }//GEN-LAST:event_btnBrowseOutputActionPerformed
 
     /**
      * @param args the command line arguments
@@ -260,14 +405,13 @@ public class frame1 extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new frame1().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new frame1().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JProgressBar Progressbar;
     private javax.swing.JButton btnBrowseOutput;
     private javax.swing.JButton btnSelectIconPath;
     private javax.swing.JButton btnSelectInputJar;
@@ -282,11 +426,13 @@ public class frame1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JRadioButton rbtEXE;
     private javax.swing.JRadioButton rbtMSI;
     private javax.swing.JTextField txtAppName;
     private javax.swing.JTextField txtAppVersion;
+    private javax.swing.JTextArea txtAreaOutputResults;
     private javax.swing.JTextField txtInputJarFile;
     private javax.swing.JTextField txtOutPut;
     private javax.swing.JTextField txtVendorName;
