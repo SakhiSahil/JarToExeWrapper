@@ -77,6 +77,10 @@ public class jartoexe extends javax.swing.JFrame {
             }
         });
 
+        txtVendorName.setToolTipText("the owner name company or publisher");
+
+        txticonPath.setToolTipText("the icon for your application with .ico extension");
+
         jLabel5.setText("Company (Publisher) Name");
 
         btnSelectIconPath.setText("Select");
@@ -86,11 +90,17 @@ public class jartoexe extends javax.swing.JFrame {
             }
         });
 
+        txtAppVersion.setToolTipText("application version example (1.0.0 or 1.2.4)");
+
+        txtOutPut.setToolTipText("the folder or path that you want to save your converted file");
+
         jLabel6.setText("Application Version (Ex: 1.0.0)");
 
         jLabel7.setText("Application Output Name");
 
         jLabel1.setText("Jar File Path Destination *");
+
+        txtAppName.setToolTipText("the name of the converted software");
 
         jLabel2.setText("Icon Path .ico");
 
@@ -103,15 +113,20 @@ public class jartoexe extends javax.swing.JFrame {
         jLabel4.setText("Application Type *");
 
         jTextField7.setEditable(false);
+        jTextField7.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         jTextField7.setText("https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314.exe");
+        jTextField7.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         buttonGroup1.add(rbtEXE);
         rbtEXE.setText("EXE");
+
+        txtJarPath.setToolTipText("the folder or path that contain the Jar File");
 
         buttonGroup1.add(rbtMSI);
         rbtMSI.setText("MSI");
 
         btnWarp.setText("Convert");
+        btnWarp.setToolTipText("Press to Convert");
         btnWarp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnWarpActionPerformed(evt);
@@ -121,9 +136,12 @@ public class jartoexe extends javax.swing.JFrame {
         txtAreaOutputResult.setEditable(false);
         txtAreaOutputResult.setColumns(20);
         txtAreaOutputResult.setRows(5);
+        txtAreaOutputResult.setToolTipText("Converting Result");
         jScrollPane1.setViewportView(txtAreaOutputResult);
 
         jLabel11.setText("Jar File *");
+
+        txtJarFile.setToolTipText("the JAR File that you want to Convert");
 
         btnJarFile.setText("Select");
         btnJarFile.addActionListener(new java.awt.event.ActionListener() {
@@ -200,16 +218,13 @@ public class jartoexe extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextField7))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jLabel7)
-                                    .addComponent(txtAppName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel7)
+                            .addComponent(txtAppName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(Progressbar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -219,7 +234,7 @@ public class jartoexe extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
+                .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -272,7 +287,7 @@ public class jartoexe extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9))
-                .addGap(12, 12, 12))
+                .addContainerGap())
         );
 
         pack();
