@@ -162,9 +162,6 @@ public class jartoexe extends javax.swing.JFrame {
                         .addComponent(btnJarFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(txtOutPut, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -185,7 +182,6 @@ public class jartoexe extends javax.swing.JFrame {
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())
-                    .addComponent(Progressbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -213,6 +209,11 @@ public class jartoexe extends javax.swing.JFrame {
                                     .addComponent(jLabel7)
                                     .addComponent(txtAppName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(Progressbar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1))
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -359,9 +360,9 @@ public class jartoexe extends javax.swing.JFrame {
                     get();  // Ensure any exceptions are propagated
                     publish("Completed! 100%");
                     Progressbar.setValue(100);  // Set progress bar to 100% upon completion
-                    JOptionPane.showMessageDialog(jartoexe.this, "Packaging completed successfully!");
+                    JOptionPane.showMessageDialog(null,"Converted successfully!","Result",JOptionPane.INFORMATION_MESSAGE);
                 } catch (HeadlessException | InterruptedException | ExecutionException e) {
-                    JOptionPane.showMessageDialog(jartoexe.this, "An error occurred during packaging: " + e.getMessage());
+                    txtAreaOutputResult.append("An error occurred during packaging: " + e.getMessage()+" \nJava Version 14 or later is not installed on your system");
                 }
             }
         }.execute();
