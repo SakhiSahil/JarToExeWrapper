@@ -69,6 +69,7 @@ public class jartoexe extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(550, 630));
         setPreferredSize(new java.awt.Dimension(550, 630));
+        setResizable(false);
 
         btnJarPath.setText("Browse");
         btnJarPath.addActionListener(new java.awt.event.ActionListener() {
@@ -281,11 +282,11 @@ public class jartoexe extends javax.swing.JFrame {
                 .addComponent(jLabel7)
                 .addGap(7, 7, 7)
                 .addComponent(txtAppName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addGap(6, 6, 6)
                 .addComponent(txtVendorName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(6, 6, 6)
+                .addGap(12, 12, 12)
                 .addComponent(Progressbar, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(btnWarp, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
