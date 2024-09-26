@@ -12,12 +12,6 @@ This repository contains tools and scripts for converting Java `.jar` files into
 - **Fixed Layout Design**: Non-resizable and fixed-height form for a consistent user interface.
 - **Cross-platform**: Java-based, so it can be run on any platform that supports Java.
 
-## Download
-
-Click below to download the latest version of the JarToExe converter:
-
-[![Download JarToExe](https://img.shields.io/badge/Download-JarToExe-blue.svg?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/SakhiSahil/JarToExeWrapper/raw/refs/heads/main/installer/JARtoEXE-1.3.7.msi)
-
 ## File Structure
 
 - **`build/`**: Contains build-related files, including output after running the Ant build script.
@@ -34,7 +28,7 @@ To build the project and convert a `.jar` file to `.exe`, follow these steps:
 
 ### 1. Clone the repository:
 
-git clone https://github.com/SakhiSahil/JarToExeWrapper.git
+```git clone https://github.com/SakhiSahil/JarToExeWrapper.git```
 2. Build the project using Ant:
 
 cd JarToExeWrapper
