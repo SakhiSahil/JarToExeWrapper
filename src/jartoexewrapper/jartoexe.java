@@ -13,13 +13,13 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-
 /**
  *
  * @author Herat Afghan Asia
  */
 public class jartoexe extends javax.swing.JFrame {
 
+    String jarDirectory, jarName;
     /**
      * Creates new form frame1
      */
@@ -37,7 +37,6 @@ public class jartoexe extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        btnJarPath = new javax.swing.JButton();
         txtVendorName = new javax.swing.JTextField();
         txticonPath = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
@@ -46,7 +45,6 @@ public class jartoexe extends javax.swing.JFrame {
         txtOutPut = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
         txtAppName = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -55,7 +53,6 @@ public class jartoexe extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jTextField7 = new javax.swing.JTextField();
         rbtEXE = new javax.swing.JRadioButton();
-        txtJarPath = new javax.swing.JTextField();
         rbtMSI = new javax.swing.JRadioButton();
         btnWarp = new javax.swing.JButton();
         Progressbar = new javax.swing.JProgressBar();
@@ -67,16 +64,9 @@ public class jartoexe extends javax.swing.JFrame {
         btnBrowseOutput = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(550, 630));
-        setPreferredSize(new java.awt.Dimension(550, 630));
+        setMinimumSize(new java.awt.Dimension(550, 585));
+        setPreferredSize(new java.awt.Dimension(550, 585));
         setResizable(false);
-
-        btnJarPath.setText("Browse");
-        btnJarPath.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnJarPathActionPerformed(evt);
-            }
-        });
 
         txtVendorName.setToolTipText("the owner name company or publisher");
 
@@ -99,8 +89,6 @@ public class jartoexe extends javax.swing.JFrame {
 
         jLabel7.setText("Application Output Name");
 
-        jLabel1.setText("Jar File Path Destination *");
-
         txtAppName.setToolTipText("the name of your software");
 
         jLabel2.setText("Icon Path .ico");
@@ -120,8 +108,6 @@ public class jartoexe extends javax.swing.JFrame {
 
         buttonGroup1.add(rbtEXE);
         rbtEXE.setText("EXE");
-
-        txtJarPath.setToolTipText("the folder or path that contain the Jar File");
 
         buttonGroup1.add(rbtMSI);
         rbtMSI.setText("MSI");
@@ -164,14 +150,6 @@ public class jartoexe extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(txtJarPath, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addComponent(btnJarPath, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jLabel11))
@@ -243,13 +221,7 @@ public class jartoexe extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jLabel1)
-                .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtJarPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnJarPath))
-                .addGap(6, 6, 6)
+                .addContainerGap()
                 .addComponent(jLabel11)
                 .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -300,7 +272,7 @@ public class jartoexe extends javax.swing.JFrame {
                         .addGap(1, 1, 1)
                         .addComponent(jLabel9))
                     .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         pack();
@@ -308,13 +280,13 @@ public class jartoexe extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnWarpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWarpActionPerformed
-        String inputJarFile = txtJarPath.getText();
+        String inputJarFile = jarDirectory;
         String iconPath = txticonPath.getText();
         String outputFile = txtOutPut.getText();
         String appName = txtAppName.getText();
         String appVersion = txtAppVersion.getText();
         String vendorName = txtVendorName.getText();
-        String jarFile = txtJarFile.getText();
+        String jarFile = jarName;
         String appType = rbtEXE.isSelected() ? "exe" : "msi";
 
         // Construct the jpackage command
@@ -396,18 +368,6 @@ public class jartoexe extends javax.swing.JFrame {
         }.execute();
     }//GEN-LAST:event_btnWarpActionPerformed
 
-    private void btnJarPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJarPathActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Select Folder Containing JAR File");
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);  // Choose only directories
-
-        int result = fileChooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedDirectory = fileChooser.getSelectedFile();
-            txtJarPath.setText(selectedDirectory.getAbsolutePath());  // Set the folder path in txtJarPath
-        }
-    }//GEN-LAST:event_btnJarPathActionPerformed
-
     private void btnSelectIconPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectIconPathActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select Icon File");
@@ -455,7 +415,9 @@ public class jartoexe extends javax.swing.JFrame {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            txtJarFile.setText(selectedFile.getName());  // Set the JAR file name in txtJarFile
+            txtJarFile.setText(selectedFile.getAbsolutePath());  // Set the JAR file name in txtJarFile
+            jarDirectory = selectedFile.getParent();
+            jarName = selectedFile.getName();
         }
     }//GEN-LAST:event_btnJarFileActionPerformed
 
@@ -512,11 +474,9 @@ public class jartoexe extends javax.swing.JFrame {
     private javax.swing.JProgressBar Progressbar;
     private javax.swing.JButton btnBrowseOutput;
     private javax.swing.JButton btnJarFile;
-    private javax.swing.JButton btnJarPath;
     private javax.swing.JButton btnSelectIconPath;
     private javax.swing.JButton btnWarp;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -534,7 +494,6 @@ public class jartoexe extends javax.swing.JFrame {
     private javax.swing.JTextField txtAppVersion;
     private javax.swing.JTextArea txtAreaOutputResult;
     private javax.swing.JTextField txtJarFile;
-    private javax.swing.JTextField txtJarPath;
     private javax.swing.JTextField txtOutPut;
     private javax.swing.JTextField txtVendorName;
     private javax.swing.JTextField txticonPath;
