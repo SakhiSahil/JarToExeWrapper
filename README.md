@@ -31,13 +31,17 @@ To build the project and convert a `.jar` file to `.exe`, follow these steps:
 ```bash
 git clone https://github.com/SakhiSahil/JarToExeWrapper.git
 ```
-2. Build the project using Ant:
+### 2. Build the project using Ant:
 
+```bash
 cd JarToExeWrapper
 ant build
-3. Run the JarToExe converter:
+```
+### 3. Run the JarToExe converter:
 
+```bash
 java -jar JarToExeConverter.jar
+```
 Follow the UI prompts to select the .jar file and generate the .exe file.
 Usage
 Once you’ve built the executable, you can distribute it using the installer located in the installer/ directory.
@@ -45,28 +49,40 @@ Once you’ve built the executable, you can distribute it using the installer lo
 Development
 For local development, build the project using the included build.xml Ant script:
 
-Clean the project:
+### Clean the project:
 
+```bash
 ant clean
-Compile the project:
+```
+### Compile the project:
 
+```bash
 ant compile
-Run the project:
+```
+### Run the project:
 
+```bash
 ant run
+```
 The project is set up to work with NetBeans IDE, and the necessary configurations are in the nbproject/ folder.
 
 Contributions
 Contributions are welcome! Please follow these steps:
 
-Fork the repository.
-Create a new branch:
+## Fork the repository.
+### Create a new branch:
 
+```bash
 git checkout -b feature-branch
-Commit your changes:
+```
+### Commit your changes:
 
+```bash
 git commit -am 'Add some feature'
-Push to the branch:
+```
+### Push to the branch:
 
+```bash
 git push origin feature-branch
+```
 Open a Pull Request.
