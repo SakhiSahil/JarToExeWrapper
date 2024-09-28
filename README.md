@@ -28,7 +28,8 @@ To build the project and convert a `.jar` file to `.exe`, follow these steps:
 
 ### 1. Clone the repository:
 
-```git clone https://github.com/SakhiSahil/JarToExeWrapper.git```
+```bash
+git clone https://github.com/SakhiSahil/JarToExeWrapper.git
 2. Build the project using Ant:
 
 cd JarToExeWrapper
