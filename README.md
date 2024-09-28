@@ -1,6 +1,6 @@
 # JARtoEXE Converter
 
-[![Download JarToExe](https://img.shields.io/badge/Download-JarToExe-blue.svg?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/SakhiSahil/JarToExeWrapper/raw/refs/heads/main/installer/JARtoEXE-1.4.2.msi)
+[![Download JarToExe](https://img.shields.io/badge/Download-JarToExe-blue.svg?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/SakhiSahil/JarToExeWrapper/raw/refs/heads/main/installer/JARtoEXE-1.4.2.msi) [![Download Wix3](https://img.shields.io/badge/Download-JarToExe-blue.svg?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314.exe)
 
 
 This repository contains tools and scripts for converting Java `.jar` files into native Windows `.exe` files. The project simplifies the process of packaging Java applications for Windows distribution, providing an installer for easy setup.
