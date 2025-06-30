@@ -9,8 +9,12 @@ This repository contains tools and scripts for converting Java `.jar` files into
 
 - **Jar to Exe Conversion**: Easily convert Java `.jar` files to native Windows `.exe` files.
 - **Installer Integration**: Provides an installer for distributing `.exe` files.
+- **Modern Look and Feel**: Updated UI using the FlatLaf library for a cleaner appearance.
+- **Improved Responsiveness**: Long-running conversion process now runs in the background without freezing the UI.
+- **Cancelable Conversions**: A "Cancel" button allows stopping an ongoing conversion process.
+- **Enhanced Feedback**: Real-time output from the packaging process is displayed, and a more accurate progress bar is provided.
 - **Fixed Layout Design**: Non-resizable and fixed-height form for a consistent user interface.
-- **Cross-platform**: Java-based, so it can be run on any platform that supports Java.
+- **Cross-platform**: Java-based, so it can be run on any platform that supports Java (though `jpackage` itself has platform-specific outputs).
 
 ## File Structure
 
@@ -22,34 +26,55 @@ This repository contains tools and scripts for converting Java `.jar` files into
 - **`build.xml`**: Ant build script to compile and package the project.
 - **`manifest.mf`**: Metadata file for managing the Java application's packaging.
 
-## Installation
+## Installation (Using Pre-built Installer)
 
-To build the project and convert a `.jar` file to `.exe`, follow these steps:
+If you prefer to use a pre-built version, you can download the installer (link at the top of this README). This does not require building from source.
 
-### 1. Clone the repository:
+## Development (Building from Source)
 
+To build the project from source and run it locally, follow these steps:
+
+### 1. Prerequisites:
+   - JDK 17 or later (ensure `jpackage` is available in your PATH).
+   - Apache Ant.
+   - (Optional for MSI) WiX Toolset v3.x.
+
+### 2. Clone the repository:
 ```bash
 git clone https://github.com/SakhiSahil/JarToExeWrapper.git
-```
-### 2. Build the project using Ant:
-
-```bash
 cd JarToExeWrapper
-ant build
 ```
-### 3. Run the JarToExe converter:
 
-```bash
-java -jar JarToExeConverter.jar
-```
-Follow the UI prompts to select the .jar file and generate the .exe file.
-Usage
-Once you’ve built the executable, you can distribute it using the installer located in the installer/ directory.
+### 3. Add Libraries:
+   - This project uses the FlatLaf library for its look and feel.
+   - Create a `lib` directory in the project root (e.g., `JarToExeWrapper/lib`).
+   - Download `flatlaf-3.4.1.jar` (or the latest compatible version) from [FlatLaf Releases](https://github.com/JFormDesigner/FlatLaf/releases).
+   - Place the `flatlaf-3.4.1.jar` file into the `lib` directory. The project's Ant build script (`nbproject/project.properties`) is configured to find it here.
 
-Development
-For local development, build the project using the included build.xml Ant script:
+### 4. Build the project using Ant:
+   - To compile the source code and create the JAR:
+     ```bash
+     ant build
+     ```
+   - This will generate `dist/JarToExeWrapper.jar`.
 
-### Clean the project:
+### 5. Run the JarToExe converter (Development):
+   - To run the application after building:
+     ```bash
+     ant run
+     ```
+   - Alternatively, you can run the built JAR directly (ensure FlatLaf JAR is accessible, which `ant run` handles via classpath):
+     ```bash
+     java -cp "dist/JarToExeWrapper.jar:lib/flatlaf-3.4.1.jar" jartoexewrapper.jartoexe
+     ```
+   - Follow the UI prompts to select the .jar file and generate the .exe file.
+
+### Usage of the Built Tool
+Once you have selected your JAR and configured options in the UI, click "Convert". The output (EXE or MSI) will be placed in your specified output directory.
+
+### Other Ant Targets for Development:
+
+#### Clean the project:
 
 ```bash
 ant clean
