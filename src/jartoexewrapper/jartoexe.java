@@ -4,6 +4,7 @@
  */
 package jartoexewrapper;
 
+import com.formdev.flatlaf.FlatLightLaf; // Import FlatLaf
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +12,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.SwingWorker; // Import SwingWorker
 import javax.swing.border.LineBorder;
+import java.io.BufferedReader; // Added for process output reading
+import java.io.InputStreamReader; // Added for process output reading
+import java.util.List; // Added for process method signature
 
 /**
  *
@@ -21,12 +26,36 @@ public class jartoexe extends javax.swing.JFrame {
 
     String jarDirectory, jarName;
     String command;
+    private javax.swing.JButton btnCancel; // Added cancel button
+    private PackagingWorker currentWorker; // To hold the current worker instance
 
     /**
      * Creates new form frame1
      */
     public jartoexe() {
         initComponents();
+
+        // Initialize and configure btnCancel
+        btnCancel = new javax.swing.JButton();
+        btnCancel.setText("Cancel");
+        btnCancel.setToolTipText("Cancel the current conversion process");
+        btnCancel.setEnabled(false);
+        btnCancel.addActionListener(evt -> {
+            if (currentWorker != null && !currentWorker.isDone()) {
+                currentWorker.cancel(true); // true to interrupt the thread
+            }
+        });
+
+        // Add btnCancel to jPanel6. This will require GUI builder adjustment for proper layout.
+        // For now, it might just stack or not be visible depending on jPanel6's layout.
+        // A FlowLayout would be simple for jPanel6 if it only contains these two buttons.
+        jPanel6.add(btnCancel);
+        // To make it potentially visible if jPanel6 uses a more flexible layout or if one is set:
+        // Example: jPanel6.setLayout(new java.awt.FlowLayout()); // This would change NetBeans' design
+        // jPanel6.add(btnWarp); // Re-add btnWarp if layout is changed
+        // jPanel6.add(btnCancel);
+        // The GUI builder in Netbeans would be the correct tool to adjust jPanel6's layout
+        // to include two buttons side-by-side or one below the other.
     }
 
     /**
@@ -368,13 +397,13 @@ public class jartoexe extends javax.swing.JFrame {
         Progressbar.setValue(0);
     }
 
-    private boolean checkFields() {
-        boolean allValid = true; // Flag to track if all fields are valid
+    private String validateFields() {
+        StringBuilder errors = new StringBuilder();
 
         // Validate inputJarFile
         if (txtJarFile.getText() == null || txtJarFile.getText().trim().isEmpty()) {
             txtJarFile.setBorder(new LineBorder(Color.PINK, 1));
-            allValid = false;
+            errors.append("- JAR File is required.\n");
         } else {
             txtJarFile.setBorder(UIManager.getBorder("TextField.border"));
         }
@@ -382,7 +411,7 @@ public class jartoexe extends javax.swing.JFrame {
         // Validate outputFile
         if (txtOutPut.getText() == null || txtOutPut.getText().trim().isEmpty()) {
             txtOutPut.setBorder(new LineBorder(Color.PINK, 1));
-            allValid = false;
+            errors.append("- Output EXE File path is required.\n");
         } else {
             txtOutPut.setBorder(UIManager.getBorder("TextField.border"));
         }
@@ -390,7 +419,7 @@ public class jartoexe extends javax.swing.JFrame {
         // Validate appName
         if (txtAppName.getText() == null || txtAppName.getText().trim().isEmpty()) {
             txtAppName.setBorder(new LineBorder(Color.PINK, 1));
-            allValid = false;
+            errors.append("- Application Output Name is required.\n");
         } else {
             txtAppName.setBorder(UIManager.getBorder("TextField.border"));
         }
@@ -398,89 +427,92 @@ public class jartoexe extends javax.swing.JFrame {
         // Validate appVersion
         if (txtAppVersion.getText() == null || txtAppVersion.getText().trim().isEmpty()) {
             txtAppVersion.setBorder(new LineBorder(Color.PINK, 1));
-            allValid = false;
+            errors.append("- Application Version is required.\n");
         } else {
-            txtAppVersion.setBorder(UIManager.getBorder("TextField.border"));
+            // Optional: Add regex for version format e.g., "X.Y.Z"
+            if (!txtAppVersion.getText().matches("\\d+(\\.\\d+){0,2}")) {
+                 txtAppVersion.setBorder(new LineBorder(Color.ORANGE, 1)); // Use a different color for warnings or format errors
+                 errors.append("- Application Version format is not standard (e.g., 1.0 or 1.0.0).\n");
+            } else {
+                txtAppVersion.setBorder(UIManager.getBorder("TextField.border"));
+            }
         }
 
         // Validate vendorName
         if (txtVendorName.getText() == null || txtVendorName.getText().trim().isEmpty()) {
             txtVendorName.setBorder(new LineBorder(Color.PINK, 1));
-            allValid = false;
+            errors.append("- Company (Publisher) Name is required.\n");
         } else {
             txtVendorName.setBorder(UIManager.getBorder("TextField.border"));
         }
 
-        return allValid;
+        // Validate icon path if provided
+        String iconPath = txticonPath.getText();
+        if (iconPath != null && !iconPath.trim().isEmpty()) {
+            if (!iconPath.toLowerCase().endsWith(".ico")) {
+                txticonPath.setBorder(new LineBorder(Color.ORANGE, 1));
+                errors.append("- Icon file should be a .ico file.\n");
+            } else {
+                File iconFile = new File(iconPath);
+                if (!iconFile.exists() || !iconFile.isFile()) {
+                    txticonPath.setBorder(new LineBorder(Color.PINK, 1));
+                    errors.append("- Icon file not found at the specified path.\n");
+                } else {
+                    txticonPath.setBorder(UIManager.getBorder("TextField.border"));
+                }
+            }
+        } else {
+            // If no icon path, ensure border is reset (if it was previously in error state)
+            txticonPath.setBorder(UIManager.getBorder("TextField.border"));
+        }
+
+
+        return errors.toString();
     }
 
     private void btnWarpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWarpActionPerformed
         reset();
+        String validationErrors = validateFields();
+
+        if (!validationErrors.isEmpty()) {
+            // Display specific errors collected from validateFields
+            JOptionPane.showMessageDialog(this, "Please correct the following errors:\n\n" + validationErrors, "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return; // Stop further execution if validation fails
+        }
+
+        // If validation passed, proceed to gather data and execute
         String inputJarFile = jarDirectory;
-        String iconPath = txticonPath.getText();
+        String jarFile = jarName;
+        String iconPathText = txticonPath.getText(); // Use a different variable name to avoid confusion with the 'command' field
         String outputFile = txtOutPut.getText();
         String appName = txtAppName.getText();
         String appVersion = txtAppVersion.getText();
         String vendorName = txtVendorName.getText();
-        String jarFile = jarName;
         String appType = rbtEXE.isSelected() ? "exe" : "msi";
 
-        // Validate fields
-        if (checkFields()) {
-            if (txticonPath.getText().equals("")) {
-                command = String.format(
-                        "jpackage --name %s --input \"%s\" --main-jar %s --type %s --app-version %s --dest \"%s\" --vendor \"%s\" --win-shortcut --win-dir-chooser",
-                        appName, inputJarFile, jarFile, appType, appVersion, outputFile, vendorName
-                );
-            } else {
-                command = String.format(
-                        "jpackage --name %s --input \"%s\" --main-jar %s --type %s --icon \"%s\" --app-version %s --dest \"%s\" --vendor \"%s\" --win-shortcut --win-dir-chooser",
-                        appName, inputJarFile, jarFile, appType, iconPath, appVersion, outputFile, vendorName
-                );
-            }
-
-            // Execute the packaging process in a separate thread
-            Thread packagingThread = new Thread(() -> {
-                try {
-                    btnWarp.setEnabled(false);
-                    // Start the process and print "Starting process..."
-                    printMessage("Starting process...");
-                    Process process = Runtime.getRuntime().exec(command);
-
-                    
-                    Thread.sleep(10000); 
-                    printMessage("Working...");
-                    Progressbar.setValue(10);
-
-
-                    Thread.sleep(20000); 
-                    printMessage("Almost done...");
-                    Progressbar.setValue(40);
-
-
-                    Thread.sleep(20000); 
-                    printMessage("Packaging...");
-                    Progressbar.setValue(60);
-
-                    process.waitFor(); // Wait for the process to finish
-                    printMessage("Packaging completed successfully.");
-                    Progressbar.setValue(100);
-                    btnWarp.setEnabled(true);
-
-                    // Show a message when done
-                    JOptionPane.showMessageDialog(null, "Converted successfully!", "Result", JOptionPane.INFORMATION_MESSAGE);
-                } catch (InterruptedException | IOException e) {
-                    e.printStackTrace();
-                    printMessage("An error occurred: " + e.getMessage());
-                    JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            });
-
-            packagingThread.start(); // Start the thread to execute the process
-            
-        } else {
-            JOptionPane.showMessageDialog(null, "Please fill in all required fields.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        // Safeguard: Ensure jarDirectory and jarName were set (e.g. by selecting a JAR file)
+        // This should ideally be fully covered by validateFields, but an extra check doesn't hurt.
+        if (inputJarFile == null || jarFile == null) {
+            JOptionPane.showMessageDialog(this, "Critical error: JAR file path or name is not set. Please re-select the JAR file.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            txtJarFile.setBorder(new LineBorder(Color.RED, 2)); // Highlight the problematic field
+            return;
         }
+
+        // Construct the jpackage command using the JPackageService
+        command = JPackageService.buildJPackageCommand(
+            appName, inputJarFile, jarFile, appType, iconPathText,
+            appVersion, outputFile, vendorName
+        );
+
+        btnWarp.setEnabled(false);
+        btnCancel.setEnabled(true); // Enable cancel button
+        currentWorker = new PackagingWorker(command); // Assign to currentWorker
+        currentWorker.addPropertyChangeListener(propertyChangeEvent -> {
+            if ("progress".equals(propertyChangeEvent.getPropertyName())) {
+                Progressbar.setValue((Integer) propertyChangeEvent.getNewValue());
+            }
+        });
+        currentWorker.execute();
 
     }//GEN-LAST:event_btnWarpActionPerformed
 
@@ -558,31 +590,38 @@ public class jartoexe extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        /* Set the FlatLaf look and feel */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+            FlatLightLaf.setup();
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf, falling back.");
+            // Fallback to Nimbus or other L&Fs
+            /* Set the Nimbus look and feel */
+            //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+            /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+             * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+             */
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Windows".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
                 }
+            } catch (ClassNotFoundException ex2) {
+                java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex2);
+            } catch (InstantiationException ex2) {
+                java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex2);
+            } catch (IllegalAccessException ex2) {
+                java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex2);
+            } catch (javax.swing.UnsupportedLookAndFeelException ex2) {
+                java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex2);
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(jartoexe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            //</editor-fold>
+            //</editor-fold>
+            //</editor-fold>
+            //</editor-fold>
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
@@ -624,4 +663,143 @@ public class jartoexe extends javax.swing.JFrame {
     private javax.swing.JTextField txtVendorName;
     private javax.swing.JTextField txticonPath;
     // End of variables declaration//GEN-END:variables
+
+    private class PackagingWorker extends SwingWorker<Void, String> {
+        private String commandToExecute;
+
+        public PackagingWorker(String command) {
+            this.commandToExecute = command;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            publish("Starting jpackage process...");
+            setProgress(0);
+
+            ProcessBuilder processBuilder;
+            String osName = System.getProperty("os.name").toLowerCase();
+            if (osName.contains("win")) {
+                processBuilder = new ProcessBuilder("cmd", "/c", commandToExecute);
+            } else {
+                // Assuming Linux, macOS, or other Unix-like systems
+                processBuilder = new ProcessBuilder("sh", "-c", commandToExecute);
+            }
+            processBuilder.redirectErrorStream(true); // Combine output and error streams
+
+            Process process = null; // Initialize process to null
+            try {
+                process = processBuilder.start();
+                publish("Executing jpackage command: " + commandToExecute);
+
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    int progress = 0;
+                    while ((line = reader.readLine()) != null) {
+                        if (isCancelled()) {
+                            publish("Process cancellation requested...");
+                            process.destroy(); // Attempt to destroy the process
+                            break;
+                        }
+                        publish(line);
+                        // Basic progress estimation based on typical jpackage output
+                        // This is a simple heuristic and might need refinement
+                    if (line.contains("step") || line.contains("Step")) { // General step reporting
+                        // Try to parse step X/Y
+                        String[] parts = line.split("\\s+");
+                        for(String part : parts) {
+                            if (part.matches("\\d+/\\d+")) {
+                                String[] nums = part.split("/");
+                                try {
+                                    int currentStep = Integer.parseInt(nums[0]);
+                                    int totalSteps = Integer.parseInt(nums[1]);
+                                    if (totalSteps > 0) {
+                                        progress = (int) (((double) currentStep / totalSteps) * 80); // Cap at 80% for packaging phase
+                                    }
+                                    break;
+                                } catch (NumberFormatException e) {
+                                    // Ignore if parsing fails
+                                }
+                            }
+                        }
+                    } else if (line.toLowerCase().contains("creating application image") || line.toLowerCase().contains("preparing application image")) {
+                        progress = Math.max(progress, 10);
+                    } else if (line.toLowerCase().contains("creating msi package") || line.toLowerCase().contains("creating exe") || line.toLowerCase().contains("creating installer")) {
+                        progress = Math.max(progress, 30);
+                    } else if (line.toLowerCase().contains("bundling")) {
+                        progress = Math.max(progress, 50);
+                    } else if (line.toLowerCase().contains("finished")) {
+                         progress = Math.max(progress, 80); // Still leave some room for final steps
+                    }
+                    setProgress(Math.min(progress, 95)); // Cap at 95% until process fully exits
+                }
+            } // end of try-with-resources for BufferedReader
+
+            if (isCancelled()) {
+                // If process is not null and is alive, destroy it.
+                // This ensures that if cancellation happened just before waitFor, we still try to kill it.
+                if (process != null && process.isAlive()) {
+                    process.destroy();
+                }
+                publish("Packaging process was actively cancelled.");
+                // Throwing CancellationException here ensures done() method handles it via its catch block.
+                throw new java.util.concurrent.CancellationException("Process cancelled by user.");
+            }
+
+            int exitCode = process.waitFor(); // This might throw InterruptedException if cancel(true) was called earlier.
+                                            // SwingWorker handles InterruptedException by transitioning to CANCELLED state.
+            setProgress(100);
+
+            if (exitCode == 0) {
+                publish("jpackage process completed successfully.");
+            } else {
+                // If we reach here and it's cancelled, it's a bit ambiguous.
+                // However, the explicit check above should catch most UI-triggered cancellations.
+                // If cancel(true) interrupted waitFor(), then CancellationException is thrown by get() in done().
+                publish("jpackage process failed with exit code: " + exitCode);
+                throw new IOException("jpackage process failed with exit code: " + exitCode + ". Check output for details.");
+            }
+            return null;
+        } catch (InterruptedException e) {
+            // Handle InterruptedException, which occurs if the thread is interrupted (e.g., by cancel(true))
+            if (process != null && process.isAlive()) {
+                process.destroy(); // Ensure process is killed if thread is interrupted
+            }
+            publish("Packaging process interrupted.");
+            Thread.currentThread().interrupt(); // Preserve interrupt status
+            throw new java.util.concurrent.CancellationException("Process interrupted and cancelled by user.");
+        } finally {
+            // Optional: any other cleanup specific to doInBackground
+        }
+    }
+        @Override
+        protected void process(List<String> chunks) { // Corrected to use java.util.List
+            for (String message : chunks) {
+                printMessage(message);
+            }
+        }
+
+        @Override
+        protected void done() {
+            // This will be called when doInBackground() is finished
+            // Re-enable button, show final messages, etc.
+            try {
+                get(); // Call get to rethrow any exception caught during doInBackground
+                Progressbar.setValue(100);
+                printMessage("Packaging completed successfully (via SwingWorker).");
+                JOptionPane.showMessageDialog(jartoexe.this, "Converted successfully!", "Result", JOptionPane.INFORMATION_MESSAGE);
+            } catch (java.util.concurrent.CancellationException e) {
+                printMessage("Packaging process was cancelled by the user.");
+                JOptionPane.showMessageDialog(jartoexe.this, "Process Cancelled", "Cancelled", JOptionPane.WARNING_MESSAGE);
+                Progressbar.setValue(0); // Reset progress bar on cancellation
+            } catch (Exception e) {
+                e.printStackTrace();
+                printMessage("An error occurred: " + e.getMessage());
+                JOptionPane.showMessageDialog(jartoexe.this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                btnWarp.setEnabled(true);
+                btnCancel.setEnabled(false); // Disable cancel button
+                currentWorker = null; // Clear current worker
+            }
+        }
+    }
 }
